@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,12 +71,20 @@ public class Viesshab {
 			OutputStreamWriter out = new OutputStreamWriter(
 			    httpCon.getOutputStream());
 			double value = Double.parseDouble(result[1]);
-			out.write(new Integer(new Double(value).intValue()).toString());
+			out.write(format(value));
 			out.close();
 			if (debug) {
 				System.out.println("Response code: " + httpCon.getResponseCode());
 			}
 		}
+	}
+
+	private String format(double value) {
+		DecimalFormat format= new DecimalFormat("#.0");
+		DecimalFormatSymbols symbols= new DecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		format.setDecimalFormatSymbols(symbols);
+		return format.format(value);
 	}
 
 	private String buildCommand() {
@@ -116,19 +126,19 @@ public class Viesshab {
 		config.load(new FileReader(configFile));
 		vclient= "/usr/local/bin/vclient";
 		if (config.getProperty("vclient.binary") != null) {
-			vclient= "vclient.binary";
+			vclient= config.getProperty("vclient.binary");
 		}
 		vclientHost= "localhost";
 		if (config.getProperty("vclient.host") != null) {
-			vclient= "vclient.host";
+			vclientHost= config.getProperty("vclient.host");
 		}
 		vclientPort= "3002";
 		if (config.getProperty("vclient.port") != null) {
-			vclient= "vclient.port";
+			vclientPort= config.getProperty("vclient.port");
 		}
 		openhabUrl= "http://127.0.0.1:8080/rest/";
 		if (config.getProperty("openhab.resturl") != null) {
-			openhabUrl= "openhab.resturl";
+			openhabUrl= config.getProperty("openhab.resturl");
 		}
 		if (!openhabUrl.endsWith("/")) {
 			openhabUrl= openhabUrl + "/";
